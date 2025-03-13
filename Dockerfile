@@ -1,16 +1,35 @@
 FROM node:22-alpine
 
+# Install necessary tools (bash for debugging, if needed)
+RUN apk add --no-cache bash
+
 # Create app directory
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json
+# Copy root package.json and lock file first
 COPY package*.json ./
 
-# Install app dependencies
+# Copy package.json files from apps (admin and web)
+COPY apps/admin/package.json ./apps/admin/package.json
+COPY apps/web/package.json ./apps/web/package.json
+
+# Install app dependencies using root package.json (will install Turbo and all dependencies)
 RUN npm install
 
+# Copy the rest of the app source code
+COPY . .
 
-# Declaring env
+# Generate Prisma database client if Prisma is used (uncomment if needed)
+# RUN npx prisma generate
+
+# Build the app using Turborepo
+RUN npm run build
+
+# Expose the port (default: 50500)
+EXPOSE 3000
+EXPOSE 3004
+
+# Declaring environment variables
 ARG PORT=50500
 ENV NODE_ENV=production
 ENV DATABASE_URL=
@@ -25,20 +44,5 @@ ENV SPACES_SECRET=
 ENV REGION=
 ENV BUCKET_NAME=
 
-
-
-
-# Bundle app source
-COPY . .
-
-# generate the prisma database client
-# RUN npx prisma generate
-
-# Build the TypeScript files
-RUN npm run build
-
-# Expose port 8080
-EXPOSE ${PORT}
-
-# Start the app
-CMD npm run start
+# Start the app using the Turbo run command
+CMD ["npm", "run", "start"]
