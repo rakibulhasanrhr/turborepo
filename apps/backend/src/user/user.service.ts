@@ -6,8 +6,6 @@ import { DatabaseService } from 'src/database/database.service';
 @Injectable()
 export class UserService {
   constructor(private readonly databaseService: DatabaseService) { }
-
-
   async create(createUser: Prisma.DashboardCreateInput) {
     return this.databaseService.dashboard.create({
       data: createUser
@@ -19,17 +17,16 @@ export class UserService {
   }
 
   findOne(id: number) {
+
     return `This action returns a #${id} user`;
   }
 
   update(id: string, updateUserDto: Prisma.DashboardUpdateInput) {
     return this.databaseService.dashboard.update({
       where: { id },
-
       data: updateUserDto
     });
   }
-
 
   async removeMany(ids: string[]) {
     return this.databaseService.dashboard.deleteMany({

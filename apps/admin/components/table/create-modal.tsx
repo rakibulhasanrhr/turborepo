@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react'; // Using lucide-react for the close icon
-import { CreateUser, User } from '@repo/types';
+import { X } from 'lucide-react';
+import { User, UserDTO } from '@repo/types';
 import { Button } from '../ui/button';
 
 interface CreateUserModalProps {
-    onSave: (user: User) => Promise<void>;
+    onSave: (user: UserDTO) => Promise<void>;
     onClose: () => void;
 }
 
 const CreateUserModal: React.FC<CreateUserModalProps> = ({ onSave, onClose }) => {
-    const [newUser, setNewUser] = useState<CreateUser>({
+    const [newUser, setNewUser] = useState<User>({
+        id: '',
         name: '',
         email: '',
         phone: '',
@@ -20,8 +21,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onSave, onClose }) =>
         createdAt: new Date(),
     });
 
-    const [error, setError] = useState<string | null>(null);
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setNewUser((prev) => ({
@@ -30,20 +29,8 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onSave, onClose }) =>
         }));
     };
 
-    const validateForm = () => {
-        const requiredFields = ['name', 'email', 'phone', "title", 'country', 'age'];
-        for (const field of requiredFields) {
-            if (!newUser[field as keyof CreateUser]) {
-                setError(`Please fill in the ${field}`);
-                return false;
-            }
-        }
-        setError(null);
-        return true;
-    };
 
     const handleSubmit = async () => {
-        if (!validateForm()) return;
 
         try {
             const response = await fetch('http://localhost:3006/user', {
@@ -77,7 +64,6 @@ const CreateUserModal: React.FC<CreateUserModalProps> = ({ onSave, onClose }) =>
                     </Button>
                 </div>
 
-                {error && <p className="text-red-500 mb-4">{error}</p>}
 
                 {/* Input fields for new user data */}
                 <div className="mb-4">

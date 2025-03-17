@@ -76,7 +76,7 @@ import {
     useTransition,
 } from "react";
 import { cn } from "@/lib/utils";
-import { CreateUser, User } from "@repo/types"
+import { User, UserDTO } from "@repo/types"
 import EditUserModal from "./modal";
 import CreateUserModal from "./create-modal";
 
@@ -240,7 +240,7 @@ export default function ContactsTable() {
     const [data, setData] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const columns = useMemo(() => getColumns({ data, setData }), [data]);
-    const [user, setUsers] = useState<CreateUser[]>([]);
+    const [user, setUsers] = useState<UserDTO[]>([]);
     //fetch the data
     useEffect(() => {
         async function fetchPosts() {
@@ -297,7 +297,7 @@ export default function ContactsTable() {
         console.log("modal clicked")
     }
 
-    const handleNewUser = async (newUser: CreateUser) => {
+    const handleNewUser = async (newUser: UserDTO) => {
         try {
             const response = await fetch('http://localhost:3006/user', {
                 method: 'POST',
