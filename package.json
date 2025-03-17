@@ -10,6 +10,7 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/axios": "^0.9.36",
     "prettier": "^3.5.3",
     "turbo": "^2.4.4",
     "typescript": "5.8.2"
@@ -21,5 +22,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "axios": "^1.8.3"
+  }
 }
