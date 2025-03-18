@@ -2,7 +2,6 @@ import { UserDTO } from "../dto/create.user.dto";
 
 
 export interface User extends UserDTO {
-    id: string;
-    createdAt: Date;
+    id?: string
     status: "ACTIVE" | "INACTIVE"
 }

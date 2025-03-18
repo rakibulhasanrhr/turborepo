@@ -1,27 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { User } from '@repo/types';
-import { X } from 'lucide-react'; // Using lucide-react for the close icon
-import { Button } from '../ui/button';
+import { useEffect, useState } from "react";
+import { Button } from "../ui/button";
+import { User } from "../../../../packages/types/src/users/interfaces/user.interface";
+import { X } from "lucide-react";
 
 interface EditUserModalProps {
-    user: User;
-    onSave: (updatedUser: User) => Promise<void>;
-    onClose: () => void;
+    user: User; // The user being edited
+    onClose: () => void; // Function to handle closing the modal
+    setData: React.Dispatch<React.SetStateAction<User[]>>; // Function to update the parent data
 }
 
-const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) => {
+const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, setData }) => {
     const [updatedUser, setUpdatedUser] = useState<User>(user);
+
 
     useEffect(() => {
         setUpdatedUser(user);
     }, [user]);
 
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setUpdatedUser((prev) => ({
-            ...prev,
-            [name]: value, // Dynamically set the field values
-        }));
+        setUpdatedUser({
+            ...user,
+            [name]: name === "age" ? Number(value) : value
+        });
     };
 
     const handleSubmit = async () => {
@@ -38,7 +40,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
                 throw new Error('Failed to update user');
             }
 
-            await onSave(updatedUser);
+            const data = await response.json();
+
+            setData((prevData) => prevData.map((u) => (u.id === data.id ? data : u)));
+
+            // Notify parent component that the user was updated
+
             onClose();
         } catch (error) {
             console.error('Error saving changes:', error);
@@ -48,7 +55,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
     return (
         <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex justify-end items-start z-50">
             <div className="bg-white w-1/2 h-full p-8 rounded-lg shadow-lg overflow-y-auto">
-                {/* Header with Edit User title and close button */}
+                {/* Header and form */}
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-semibold">Edit User</h2>
                     <Button onClick={onClose} className="text-gray-600 hover:text-gray-800 focus:outline-none">
@@ -56,7 +63,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
                     </Button>
                 </div>
 
-                {/* Editable fields for user data */}
+                {/* Editable fields */}
                 <div className="mb-4">
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                         Name:
@@ -71,6 +78,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
                     />
                 </div>
 
+                {/* Other fields */}
                 <div className="mb-4">
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                         Email:
@@ -84,13 +92,12 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>
-
                 <div className="mb-4">
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                         Phone:
                     </label>
                     <input
-                        type="text"
+                        type="phone"
                         id="phone"
                         name="phone"
                         value={updatedUser.phone}
@@ -98,8 +105,35 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />
                 </div>
+                <div className="mb-4">
+                    <label htmlFor="age" className="block text-sm font-medium text-gray-700">
+                        Age:
+                    </label>
+                    <input
+                        type="age"
+                        id="age"
+                        name="age"
+                        value={updatedUser.age}
+                        onChange={handleChange}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                        Country:
+                    </label>
+                    <input
+                        type="country"
+                        id="country"
+                        name="country"
+                        value={updatedUser.country}
+                        onChange={handleChange}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    />
+                </div>
 
-                {/* Other fields... */}
+
+                {/* Status dropdown */}
                 <div className="mb-4">
                     <label htmlFor="status" className="block text-sm font-medium text-gray-700">
                         Status:
@@ -116,23 +150,16 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onSave, onClose }) 
                     </select>
                 </div>
 
-
-                <Button
-                    onClick={handleSubmit}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-                >
+                {/* Save and Cancel buttons */}
+                <Button onClick={handleSubmit} className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none">
                     Save
                 </Button>
-                <Button
-                    onClick={onClose}
-                    className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none"
-                >
+                <Button onClick={onClose} className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none">
                     Cancel
                 </Button>
-
             </div>
         </div>
     );
 };
 
-export default EditUserModal;
+export default EditUserModal

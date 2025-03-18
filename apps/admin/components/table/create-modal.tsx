@@ -1,187 +1,104 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
-import { User, UserDTO } from '@repo/types';
-import { Button } from '../ui/button';
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { User } from "../../../../packages/types/src/users/interfaces/user.interface";
+import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogTitle } from "../ui/dialog";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
 
-interface CreateUserModalProps {
-    onSave: (user: UserDTO) => Promise<void>;
-    onClose: () => void;
-}
-
-const CreateUserModal: React.FC<CreateUserModalProps> = ({ onSave, onClose }) => {
-    const [newUser, setNewUser] = useState<User>({
-        id: '',
-        name: '',
-        email: '',
-        phone: '',
-        title: '',
-        country: '',
+function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClose: () => void, setData: React.Dispatch<React.SetStateAction<User[]>> }) {
+    const [user, setUser] = useState<User>({
+        name: "",
+        email: "",
+        phone: "",
         age: 0,
-        status: 'ACTIVE', // Default to active status
-        createdAt: new Date(),
+        country: "",
+        title: "",
+        status: "ACTIVE"
     });
+
+    const [error, setError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setNewUser((prev) => ({
-            ...prev,
-            [name]: name === 'age' ? parseInt(value) : value,
-        }));
+        setUser({
+            ...user,
+            [name]: name === "age" ? Number(value) : value
+        });
     };
 
 
-    const handleSubmit = async () => {
-
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
         try {
-            const response = await fetch('http://localhost:3006/user', {
-                method: 'POST',
+            const response = await fetch("http://localhost:3006/user", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(newUser),
+                body: JSON.stringify(user),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create user');
+                throw new Error("Failed to create user");
             }
 
-            const createdUser = await response.json();
-            await onSave(createdUser);
+            const data = await response.json();
+            console.log("User created:", data);
+            setData((prevData) => [...prevData, data]);
+
+
             onClose();
-        } catch (error) {
-            console.error('Error creating user:', error);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+            setError(errorMessage);
         }
+
     };
 
     return (
-        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex justify-end items-start z-50">
-            <div className="bg-white w-1/2 h-full p-8 rounded-lg shadow-lg overflow-y-auto">
-                {/* Header with Create User title and close button */}
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-2xl font-semibold">Create New User</h2>
-                    <Button onClick={onClose} className="text-gray-600 hover:text-gray-800 focus:outline-none">
-                        <X size={24} />
-                    </Button>
-                </div>
-
-
-                {/* Input fields for new user data */}
-                <div className="mb-4">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Name:
-                    </label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={newUser.name}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        Email:
-                    </label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={newUser.email}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                        Phone:
-                    </label>
-                    <input
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        value={newUser.phone}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                        Title:
-                    </label>
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        value={newUser.title}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">
-                        Country:
-                    </label>
-                    <input
-                        type="text"
-                        id="country"
-                        name="country"
-                        value={newUser.country}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="age" className="block text-sm font-medium text-gray-700">
-                        Age:
-                    </label>
-                    <input
-                        type="number"
-                        id="age"
-                        name="age"
-                        value={newUser.age}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                        Status:
-                    </label>
-                    <select
-                        id="status"
-                        name="status"
-                        value={newUser.status}
-                        onChange={handleChange}
-                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                    >
-                        <option value="ACTIVE">Active</option>
-                        <option value="INACTIVE">Inactive</option>
-                    </select>
-                </div>
-
-                <div className="flex justify-end gap-4 mt-6">
-                    <Button
-                        onClick={handleSubmit}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
-                    >
-                        Create
-                    </Button>
-                    <Button
-                        onClick={onClose}
-                        className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none"
-                    >
-                        Cancel
-                    </Button>
-                </div>
-            </div>
-        </div>
+        <Dialog open={isOpen} onOpenChange={onClose}>
+            <DialogOverlay />
+            <DialogContent>
+                <DialogTitle>Create New User</DialogTitle>
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" name="name" value={user.name} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" name="email" value={user.email} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="title">Title</Label>
+                        <Input id="title" name="title" value={user.title} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input id="phone" name="phone" value={user.phone} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="age">Age</Label>
+                        <Input id="age" name="age" value={user.age} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="country">Country</Label>
+                        <Input id="country" name="country" value={user.country} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="status">Status</Label>
+                        <select id="status" name="status" value={user.status} onChange={handleChange} required>
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                        </select>
+                    </div>
+                    <Button type="submit">Submit</Button>
+                </form>
+                {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+                <DialogClose />
+            </DialogContent>
+        </Dialog>
     );
-};
-
+}
 export default CreateUserModal;

@@ -31,6 +31,6 @@ export const UserSchema = z.object({
         message: "asfafsasffsa"
     })
 
-});
+})
 
 export type UserDTO = z.infer<typeof UserSchema>;
