@@ -457,7 +457,7 @@ function RowActions({
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
 
-    const handleDelete = async (itemId: string) => {
+    const handleDelete = async (itemId?: string) => {
         try {
             const res = await fetch("http://localhost:3006/user", {
                 method: "DELETE",
