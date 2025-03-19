@@ -29,6 +29,7 @@ RUN npm run build
 # Expose the port (default: 50500)
 EXPOSE 3000
 EXPOSE 3004
+EXPOSE 3004
 
 # Declaring environment variables
 ARG PORT=50500
