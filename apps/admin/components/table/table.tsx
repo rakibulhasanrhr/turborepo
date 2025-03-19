@@ -183,7 +183,7 @@ export default function ContactsTable() {
     useEffect(() => {
         async function fetchPosts() {
             try {
-                const res = await fetch("http://localhost:3006/user", {
+                const res = await fetch("http://localhost:3025/user", {
                     method: "GET"
                 });
                 const data = await res.json();
@@ -207,7 +207,7 @@ export default function ContactsTable() {
         const selectedIds = table.getSelectedRowModel().rows.map(row => row.original.id);
         console.log(selectedIds)
         try {
-            const response = await fetch("http://localhost:3006/user", {
+            const response = await fetch("http://localhost:3025/user", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -459,7 +459,7 @@ function RowActions({
 
     const handleDelete = async (itemId?: string) => {
         try {
-            const res = await fetch("http://localhost:3006/user", {
+            const res = await fetch("http://localhost:3025/user", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

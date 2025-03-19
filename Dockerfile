@@ -10,34 +10,41 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Copy package.json files from apps (admin and web)
+COPY apps/backend/package.json ./apps/backend/package.json
 COPY apps/admin/package.json ./apps/admin/package.json
 COPY apps/web/package.json ./apps/web/package.json
-COPY apps/backend/package.json ./apps/backend/package.json
 
 # Install app dependencies using root package.json (will install Turbo and all dependencies)
 RUN npm install
 
 # Copy the rest of the app source code
 COPY . .
+# COPY apps/backend/.env ./apps/backend/.env
 
-# Generate Prisma database client if Prisma is used (uncomment if needed)
-# RUN npx prisma generate
+
+# Run Prisma migrations
+# RUN ./apps/backend/.env npx prisma migrate deploy --schema ./apps/backend/prisma/schema.prisma
+RUN npx prisma migrate deploy --schema ./apps/backend/prisma/schema.prisma
+# Generate Prisma client (ensure .env is loaded)
+# RUN ./apps/backend/.env npx prisma generate --schema ./apps/backend/prisma/schema.prisma
+RUN npx prisma generate --schema ./apps/backend/prisma/schema.prisma
+
 
 # Build the app using Turborepo
 RUN npm run build
 
 # Expose the port (default: 50500)
-EXPOSE 3000
-EXPOSE 3004
-EXPOSE 3004
+EXPOSE 3004  
+EXPOSE 3025
+EXPOSE 3011
 
 # Declaring environment variables
-ARG PORT=50500
-ENV NODE_ENV=production
-ENV DATABASE_URL=
+ARG PORT=
+ENV PORT=${PORT}
+ENV DATABASE_URL=${DATABASE_URL}
+ENV NODE_ENV=
 ENV REDIS_URL=
 ENV MONGODB_URL=
-ENV PORT=${PORT}
 ENV SPACES_BASE_URl=
 ENV ACCESS_TOKEN_LIFETIME=
 ENV ENDPOINT=

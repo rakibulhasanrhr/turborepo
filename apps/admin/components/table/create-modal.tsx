@@ -31,7 +31,7 @@ function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClos
         e.preventDefault();
         setError(null);
         try {
-            const response = await fetch("http://localhost:3006/user", {
+            const response = await fetch("http://localhost:3025/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

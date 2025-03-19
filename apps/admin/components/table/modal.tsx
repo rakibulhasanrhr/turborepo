@@ -28,7 +28,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, setData })
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch(`http://localhost:3006/user/${updatedUser.id}`, {
+            const response = await fetch(`http://localhost:3025/user/${updatedUser.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',

@@ -22,7 +22,7 @@ const User = () => {
     useEffect(() => {
         async function fetchUsers() {
             try {
-                const res = await fetch("http://localhost:3006/user", {
+                const res = await fetch("http://localhost:3025/user", {
                     method: "GET",
                 });
                 const data: User[] = await res.json();
