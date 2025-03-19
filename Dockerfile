@@ -12,6 +12,7 @@ COPY package*.json ./
 # Copy package.json files from apps (admin and web)
 COPY apps/admin/package.json ./apps/admin/package.json
 COPY apps/web/package.json ./apps/web/package.json
+COPY apps/backend/package.json ./apps/backend/package.json
 
 # Install app dependencies using root package.json (will install Turbo and all dependencies)
 RUN npm install
