@@ -1,9 +1,12 @@
 import React from 'react'
-import { CardDemo } from './components/card/card'
+import User from '../user/components/user'
 
 const page = () => {
     return (
-        <CardDemo />
+        <div className='p-3.5'>
+            <h1 className='text-3xl text-center pb-6'>User Management</h1>
+            <User></User>
+        </div>
     )
 }
 
