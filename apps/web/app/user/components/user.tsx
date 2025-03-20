@@ -2,7 +2,9 @@
 "use client"
 import { useEffect, useState } from "react";
 import type { User } from "@repo/types";
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
+import { Button } from "@repo/ui"
+
 import {
     Card,
     CardContent,

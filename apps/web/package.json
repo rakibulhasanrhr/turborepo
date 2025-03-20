@@ -26,6 +26,7 @@
     "@eslint/eslintrc": "^3",
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@repo/ui": "*",
     "@repo/types": "*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
