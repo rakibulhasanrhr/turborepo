@@ -19,14 +19,15 @@ RUN npm install
 
 # Copy the rest of the app source code
 COPY . .
-# COPY apps/backend/.env ./apps/backend/.env
+COPY apps/backend/.env ./apps/backend/.env
 
 
 # Run Prisma migrations
-# RUN ./apps/backend/.env npx prisma migrate deploy --schema ./apps/backend/prisma/schema.prisma
-RUN npx prisma migrate deploy --schema ./apps/backend/prisma/schema.prisma
+# RUN set -a && . ./apps/backend/.env && npx prisma migrate deploy --schema ./apps/backend/prisma/schema.prisma
+RUN . ./apps/backend/.env npx prisma migrate deploy --schema ./apps/backend/prisma/schema.prisma
+
 # Generate Prisma client (ensure .env is loaded)
-# RUN ./apps/backend/.env npx prisma generate --schema ./apps/backend/prisma/schema.prisma
+# RUN set -a && . ./apps/backend/.env && npx prisma generate --schema ./apps/backend/prisma/schema.prisma
 RUN npx prisma generate --schema ./apps/backend/prisma/schema.prisma
 
 
@@ -39,19 +40,19 @@ EXPOSE 3025
 EXPOSE 3011
 
 # Declaring environment variables
-ARG PORT=
-ENV PORT=${PORT}
-ENV DATABASE_URL=${DATABASE_URL}
-ENV NODE_ENV=
-ENV REDIS_URL=
-ENV MONGODB_URL=
-ENV SPACES_BASE_URl=
-ENV ACCESS_TOKEN_LIFETIME=
-ENV ENDPOINT=
-ENV SPACES_KEY=
-ENV SPACES_SECRET=
-ENV REGION=
-ENV BUCKET_NAME=
+# ARG PORT=
+# ENV PORT=
+# ENV DATABASE_URL=
+# ENV NODE_ENV=
+# ENV REDIS_URL=
+# ENV MONGODB_URL=
+# ENV SPACES_BASE_URl=
+# ENV ACCESS_TOKEN_LIFETIME=
+# ENV ENDPOINT=
+# ENV SPACES_KEY=
+# ENV SPACES_SECRET=
+# ENV REGION=
+# ENV BUCKET_NAME=
 
 # Start the app using the Turbo run command
 CMD ["npm", "run", "start"]

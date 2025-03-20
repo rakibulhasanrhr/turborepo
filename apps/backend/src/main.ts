@@ -7,7 +7,7 @@ async function bootstrap() {
   app.enableCors()
   app.useGlobalGuards();
   app.useGlobalPipes()
-  await app.listen(process.env.PORT ?? 3025);
+  await app.listen(process.env.PORT || 3009);
   console.log(`Connected in PORT ${process.env.PORT}`);
 }
 
