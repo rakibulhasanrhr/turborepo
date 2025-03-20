@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Patch, UsePipes, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserSchema, type UserDTO } from '@repo/types';
 import { Prisma } from '@prisma/client';
@@ -22,8 +22,8 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query('name') name?: string) {
+    return this.userService.findAll(name);
   }
 
   @Get(':id')

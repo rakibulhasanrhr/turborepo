@@ -1,10 +1,22 @@
 import { z } from "zod";
 export const UserSchema = z.object({
-    name: z.string({
-        required_error: "Name is required",
-        invalid_type_error: "Name must be a string",
-        message: "asfafsasffsa"
+    firstName: z.string({
+        required_error: "firstName is required",
+        invalid_type_error: "firstName must be a string",
+        message: "firstName"
     }),
+    middleName: z.string({
+
+        required_error: "middleName is required",
+        invalid_type_error: "middleName must be a string",
+        message: "middleName"
+    }).optional(),
+    lastName: z.string({
+        required_error: "lastName is required",
+        invalid_type_error: "lastName must be a string",
+        message: "lastName"
+    }),
+
     title: z.string({
         required_error: "title is required",
         invalid_type_error: "title must be a string",

@@ -4,7 +4,9 @@ CREATE TYPE "Status" AS ENUM ('ACTIVE', 'INACTIVE');
 -- CreateTable
 CREATE TABLE "Dashboard" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "middleName" TEXT,
+    "lastName" TEXT NOT NULL,
     "status" "Status" NOT NULL DEFAULT 'ACTIVE',
     "title" TEXT NOT NULL,
     "email" TEXT NOT NULL,

@@ -12,8 +12,43 @@ export class UserService {
     });
   }
 
-  findAll() {
-    return this.databaseService.dashboard.findMany();
+  async findAll(name?: string) {
+    let where: {
+      OR?: {
+        firstName?: { contains: string; mode: "insensitive" };
+        lastName?: { contains: string; mode: "insensitive" };
+        middleName?: { contains: string; mode: "insensitive" };
+      }[];
+    } = {};
+
+    if (name) {
+      where = {
+        OR: [
+          {
+            firstName: {
+              contains: name,
+              mode: "insensitive",
+            },
+          },
+          {
+            lastName: {
+              contains: name,
+              mode: "insensitive",
+            },
+          },
+          {
+            middleName: {
+              contains: name,
+              mode: "insensitive",
+            },
+          },
+        ],
+      };
+    }
+
+    return this.databaseService.dashboard.findMany({
+      where
+    });
   }
 
   findOne(id: number) {
