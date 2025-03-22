@@ -65,16 +65,16 @@ function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClos
                 <DialogTitle>Create New User</DialogTitle>
                 <form onSubmit={handleSubmit}>
                     <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" value={user.firstName} onChange={handleChange} required />
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input id="firstName" name="firstName" value={user.firstName} onChange={handleChange} required />
                     </div>
                     <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" value={user.middleName} onChange={handleChange} required />
+                        <Label htmlFor="middleName">Middle Name</Label>
+                        <Input id="middleName" name="middleName" value={user.middleName} onChange={handleChange} required />
                     </div>
                     <div>
-                        <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" value={user.lastName} onChange={handleChange} required />
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input id="lastName" name="lastName" value={user.lastName} onChange={handleChange} required />
                     </div>
                     <div>
                         <Label htmlFor="email">Email</Label>
