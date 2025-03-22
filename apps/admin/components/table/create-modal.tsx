@@ -7,7 +7,9 @@ import { Label } from "../ui/label";
 
 function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClose: () => void, setData: React.Dispatch<React.SetStateAction<User[]>> }) {
     const [user, setUser] = useState<User>({
-        name: "",
+        firstName: "",
+        lastName: "",
+        middleName: "",
         email: "",
         phone: "",
         age: 0,
@@ -31,7 +33,7 @@ function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClos
         e.preventDefault();
         setError(null);
         try {
-            const response = await fetch("http://localhost:3025/user", {
+            const response = await fetch("http://localhost:3024/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -64,7 +66,15 @@ function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClos
                 <form onSubmit={handleSubmit}>
                     <div>
                         <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" value={user.name} onChange={handleChange} required />
+                        <Input id="name" name="name" value={user.firstName} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" name="name" value={user.middleName} onChange={handleChange} required />
+                    </div>
+                    <div>
+                        <Label htmlFor="name">Name</Label>
+                        <Input id="name" name="name" value={user.lastName} onChange={handleChange} required />
                     </div>
                     <div>
                         <Label htmlFor="email">Email</Label>

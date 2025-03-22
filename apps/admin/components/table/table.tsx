@@ -46,11 +46,13 @@ import { User } from "@repo/types"
 import EditUserModal from "./modal";
 import CreateUserModal from "./create-modal";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { Input } from "../ui/input";
 
 interface UserData {
     data: User[];
     setData: React.Dispatch<React.SetStateAction<User[]>>;
 }
+
 
 //setting up the col with the data
 const getColumns = ({ data, setData }: UserData): ColumnDef<User>[] => [
@@ -91,14 +93,24 @@ const getColumns = ({ data, setData }: UserData): ColumnDef<User>[] => [
     },
     {
         header: "Name",
-        accessorKey: "name",
-        cell: ({ row }) => (
-            <div className="flex items-center gap-3">
-                <div className="font-medium">{row.getValue("name")}</div>
-            </div>
-        ),
-        size: 180,
-        enableHiding: false,
+        accessorFn: (row) => {
+            const firstName = row.firstName;
+            const middleName = row.middleName;
+            const lastName = row.lastName;
+            return `${firstName} ${middleName ? middleName + " " : ""}${lastName}`;
+        },
+        cell: ({ row }) => {
+            // Use row.original to access the raw data from the row
+            const { firstName, middleName, lastName } = row.original;
+            const fullName = `${firstName} ${middleName ? middleName + " " : ""}${lastName}`;
+
+            return (
+                <div className="flex items-center gap-3">
+                    <div className="font-medium">{fullName}</div>
+                </div>
+            );
+        },
+
     },
     {
         header: "Title",
@@ -173,17 +185,20 @@ const getColumns = ({ data, setData }: UserData): ColumnDef<User>[] => [
     },
 ];
 
+
 export default function ContactsTable() {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [data, setData] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const columns = useMemo(() => getColumns({ data, setData }), [data]);
+    const [searchTerm, setSearchTerm] = useState('');
+
 
     //fetch the data
     useEffect(() => {
         async function fetchPosts() {
             try {
-                const res = await fetch("http://localhost:3025/user", {
+                const res = await fetch("http://localhost:3024/user", {
                     method: "GET"
                 });
                 const data = await res.json();
@@ -207,7 +222,7 @@ export default function ContactsTable() {
         const selectedIds = table.getSelectedRowModel().rows.map(row => row.original.id);
         console.log(selectedIds)
         try {
-            const response = await fetch("http://localhost:3025/user", {
+            const response = await fetch("http://localhost:3024/user", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -227,6 +242,24 @@ export default function ContactsTable() {
             console.error("Error deleting users:", error);
         }
     };
+
+    const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchQuery = e.target.value;
+        setSearchTerm(searchQuery);
+
+        if (searchQuery) {
+            try {
+                const response = await fetch(`http://localhost:3024/user?name=${searchQuery}`);
+                const data = await response.json();
+                console.log(data); // Handle the data as per your requirements
+                setData(data)
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+            }
+        }
+
+    };
+
 
     // Table Mechanism
     const table = useReactTable({
@@ -301,6 +334,8 @@ export default function ContactsTable() {
 
                 </div>
             </div>
+            <Input id="search" name="search" placeholder="Search Name Here" value={searchTerm}
+                onChange={handleSearch} className="w-1/5" />
 
             {/* Table */}
             <Table className="table-fixed border-separate border-spacing-0 [&_tr:not(:last-child)_td]:border-b">
@@ -459,7 +494,7 @@ function RowActions({
 
     const handleDelete = async (itemId?: string) => {
         try {
-            const res = await fetch("http://localhost:3025/user", {
+            const res = await fetch("http://localhost:3024/user", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

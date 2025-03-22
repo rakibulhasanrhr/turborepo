@@ -28,7 +28,7 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, setData })
 
     const handleSubmit = async () => {
         try {
-            const response = await fetch(`http://localhost:3025/user/${updatedUser.id}`, {
+            const response = await fetch(`http://localhost:3024/user/${updatedUser.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +72,33 @@ const EditUserModal: React.FC<EditUserModalProps> = ({ user, onClose, setData })
                         type="text"
                         id="name"
                         name="name"
-                        value={updatedUser.name}
+                        value={updatedUser.middleName}
+                        onChange={handleChange}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                        Name:
+                    </label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={updatedUser.lastName}
+                        onChange={handleChange}
+                        className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                    />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                        Name:
+                    </label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={updatedUser.firstName}
                         onChange={handleChange}
                         className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
                     />

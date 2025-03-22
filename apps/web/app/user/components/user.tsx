@@ -24,7 +24,7 @@ const User = () => {
     useEffect(() => {
         async function fetchUsers() {
             try {
-                const res = await fetch("http://localhost:3025/user", {
+                const res = await fetch("http://localhost:3024/user", {
                     method: "GET",
                 });
                 const data: User[] = await res.json();
@@ -51,7 +51,7 @@ const User = () => {
             {data.map((user) => (
                 <Card key={user.id} className="">
                     <CardHeader>
-                        <CardTitle>{user.name}</CardTitle>
+                        <CardTitle>{`${user.firstName} ${user.middleName ? user.middleName + ' ' : ''}${user.lastName}`}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <p>Title: {user.title}</p>
