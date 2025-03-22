@@ -54,6 +54,10 @@ interface UserData {
 }
 
 
+interface TableProps {
+    apiEndpoint: string;
+}
+
 //setting up the col with the data
 const getColumns = ({ data, setData }: UserData): ColumnDef<User>[] => [
     {
@@ -186,7 +190,7 @@ const getColumns = ({ data, setData }: UserData): ColumnDef<User>[] => [
 ];
 
 
-export default function ContactsTable() {
+export default function ContactsTable({ apiEndpoint }: TableProps) {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [data, setData] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -195,10 +199,29 @@ export default function ContactsTable() {
 
 
     //fetch the data
+    // useEffect(() => {
+    //     async function fetchPosts() {
+    //         try {
+    //             const res = await fetch("http://localhost:3024/user", {
+    //                 method: "GET"
+    //             });
+    //             const data = await res.json();
+    //             setData(data);
+    //         } catch (error) {
+    //             console.error("Error fetching data:", error);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     }
+    //     fetchPosts();
+    // }, []);
+
+    //reuse able components useeffect
+
     useEffect(() => {
         async function fetchPosts() {
             try {
-                const res = await fetch("http://localhost:3024/user", {
+                const res = await fetch(apiEndpoint, {
                     method: "GET"
                 });
                 const data = await res.json();
@@ -210,7 +233,10 @@ export default function ContactsTable() {
             }
         }
         fetchPosts();
-    }, []);
+    }, [apiEndpoint]);
+
+
+
 
     //Modal
     const handleModal = async () => {
@@ -222,7 +248,7 @@ export default function ContactsTable() {
         const selectedIds = table.getSelectedRowModel().rows.map(row => row.original.id);
         console.log(selectedIds)
         try {
-            const response = await fetch("http://localhost:3024/user", {
+            const response = await fetch(apiEndpoint, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -249,7 +275,7 @@ export default function ContactsTable() {
 
         if (searchQuery) {
             try {
-                const response = await fetch(`http://localhost:3024/user?name=${searchQuery}`);
+                const response = await fetch(`${apiEndpoint}?name=${searchQuery}`);
                 const data = await response.json();
                 console.log(data); // Handle the data as per your requirements
                 setData(data)
@@ -279,6 +305,18 @@ export default function ContactsTable() {
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         setData={setData}
+                        apiEndpoint={apiEndpoint}
+                        method="POST"
+                        fields={[
+                            { name: "firstName", label: "First Name", type: "text", required: true },
+                            { name: "lastName", label: "Last Name", type: "text", required: true },
+                            { name: "email", label: "Email", type: "email", required: true },
+                            { name: "phone", label: "Phone", type: "text" },
+                            { name: "title", label: "Title", type: "text" },
+                            { name: "country", label: "Country", type: "text" },
+                            { name: "age", label: "age", type: "text" },
+                        ]}
+                        initialData={{ firstName: "", lastName: "", email: "", phone: "", title: "", country: "", age: 0 }}
                     />
                 </div>
                 <div >
@@ -488,6 +526,8 @@ function RowActions({
     data: User[];
     item: User;
 }) {
+    const [users, setUsers] = useState<User[]>([]); // Array of users
+
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
@@ -553,15 +593,29 @@ function RowActions({
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            {/* Conditionally render the EditUserModal */}
             {isModalOpen && selectedUser && (
                 <EditUserModal
-                    user={selectedUser} // The user being edited
-                    onClose={() => setIsModalOpen(false)} // Function to close the modal
-                    setData={setData} // Pass the setData function to the modal
+                    fields={[
+                        { name: "firstName", label: "First Name", type: "text" },
+                        { name: "lastName", label: "Last Name", type: "text" },
+                        { name: "email", label: "Email", type: "email" },
+                        { name: "phone", label: "Phone", type: "text" },
+                        { name: "title", label: "Title", type: "text" },
+                        { name: "country", label: "Country", type: "text" },
+                        { name: "age", label: "Age", type: "number" },
+                    ]}
+                    apiEndpoint={`http://localhost:3024/user/${selectedUser.id}`}
+                    method="PATCH"
+                    data={selectedUser}
+                    onClose={() => setIsModalOpen(false)}
+                    setData={setData}
                 />
+
+
             )}
+
+
+
         </>
     );
 

@@ -1,8 +1,10 @@
+import ContactsTable from '@/components/table/table'
 import React from 'react'
 
 const page = () => {
     return (
-        <div>This is contact page</div>
+
+        <ContactsTable apiEndpoint='http://localhost:3024/user' />
     )
 }
 

@@ -1,109 +1,110 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { User } from "../../../../packages/types/src/users/interfaces/user.interface";
 import { Dialog, DialogClose, DialogContent, DialogOverlay, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
+import { Input } from "@/components/ui/input";
 
-function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClose: () => void, setData: React.Dispatch<React.SetStateAction<User[]>> }) {
-    const [user, setUser] = useState<User>({
-        firstName: "",
-        lastName: "",
-        middleName: "",
-        email: "",
-        phone: "",
-        age: 0,
-        country: "",
-        title: "",
-        status: "ACTIVE"
-    });
+interface FormField {
+    name: string;
+    label: string;
+    type: string;
+    required?: boolean;
+    options?: string[];  // For select fields like status, if needed
+}
 
+interface CreateModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    apiEndpoint: string;
+    method: "POST" | "PUT";
+    fields: FormField[];
+    initialData: Record<string, any>; // Initial data for the form (for editing or setting default values)
+    setData: React.Dispatch<React.SetStateAction<any[]>>; // Update the data after submitting the form
+}
+
+function CreateUserModal({
+    isOpen,
+    onClose,
+    apiEndpoint,
+    method,
+    fields,
+    initialData,
+    setData,
+}: CreateModalProps) {
+    const [formData, setFormData] = useState<Record<string, any>>(initialData);
     const [error, setError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setUser({
-            ...user,
-            [name]: name === "age" ? Number(value) : value
+        setFormData({
+            ...formData,
+            [name]: name === "age" ? Number(value) : value, // Handle age as a number
         });
     };
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         try {
-            const response = await fetch("http://localhost:3024/user", {
-                method: "POST",
+            const response = await fetch(apiEndpoint, {
+                method,
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(user),
+                body: JSON.stringify(formData),
             });
 
             if (!response.ok) {
-                throw new Error("Failed to create user");
+                throw new Error("Failed to submit data");
             }
 
             const data = await response.json();
-            console.log("User created:", data);
-            setData((prevData) => [...prevData, data]);
+            console.log("Data submitted:", data);
+            setData((prevData) => [...prevData, data]); // Add the new data to the list
 
-
-            onClose();
+            onClose(); // Close the modal after successful submission
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
             setError(errorMessage);
         }
-
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogOverlay />
             <DialogContent>
-                <DialogTitle>Create New User</DialogTitle>
+                <DialogTitle>{method === "POST" ? "Create New Entry" : "Edit Entry"}</DialogTitle>
                 <form onSubmit={handleSubmit}>
-                    <div>
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" name="firstName" value={user.firstName} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="middleName">Middle Name</Label>
-                        <Input id="middleName" name="middleName" value={user.middleName} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" name="lastName" value={user.lastName} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" value={user.email} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="title">Title</Label>
-                        <Input id="title" name="title" value={user.title} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="phone">Phone</Label>
-                        <Input id="phone" name="phone" value={user.phone} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="age">Age</Label>
-                        <Input id="age" name="age" value={user.age} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="country">Country</Label>
-                        <Input id="country" name="country" value={user.country} onChange={handleChange} required />
-                    </div>
-                    <div>
-                        <Label htmlFor="status">Status</Label>
-                        <select id="status" name="status" value={user.status} onChange={handleChange} required>
-                            <option value="ACTIVE">Active</option>
-                            <option value="INACTIVE">Inactive</option>
-                        </select>
-                    </div>
-                    <Button type="submit">Submit</Button>
+                    {fields.map((field) => (
+                        <div key={field.name}>
+                            <Label htmlFor={field.name}>{field.label}</Label>
+                            {field.type === "select" ? (
+                                <select
+                                    id={field.name}
+                                    name={field.name}
+                                    value={formData[field.name] || ""}
+                                    onChange={handleChange}
+                                    required={field.required}
+                                >
+                                    {field.options?.map((option) => (
+                                        <option key={option} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
+                            ) : (
+                                <Input
+                                    id={field.name}
+                                    name={field.name}
+                                    type={field.type}
+                                    value={formData[field.name] || ""}
+                                    onChange={handleChange}
+                                    required={field.required}
+                                />
+                            )}
+                        </div>
+                    ))}
+                    <Button type="submit">{method === "POST" ? "Submit" : "Update"}</Button>
                 </form>
                 {error && <p style={{ color: 'red' }}>Error: {error}</p>}
                 <DialogClose />
@@ -111,4 +112,5 @@ function CreateUserModal({ isOpen, onClose, setData }: { isOpen: boolean, onClos
         </Dialog>
     );
 }
+
 export default CreateUserModal;
