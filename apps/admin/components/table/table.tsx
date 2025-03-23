@@ -311,10 +311,10 @@ export default function ContactsTable({ apiEndpoint }: TableProps) {
                             { name: "firstName", label: "First Name", type: "text", required: true },
                             { name: "lastName", label: "Last Name", type: "text", required: true },
                             { name: "email", label: "Email", type: "email", required: true },
-                            { name: "phone", label: "Phone", type: "text" },
-                            { name: "title", label: "Title", type: "text" },
-                            { name: "country", label: "Country", type: "text" },
-                            { name: "age", label: "age", type: "text" },
+                            { name: "phone", label: "Phone", type: "text", required: true },
+                            { name: "title", label: "Title", type: "text", required: true },
+                            { name: "country", label: "Country", type: "text", required: true },
+                            { name: "age", label: "age", type: "text", required: true },
                         ]}
                         initialData={{ firstName: "", lastName: "", email: "", phone: "", title: "", country: "", age: 0 }}
                     />
@@ -603,6 +603,7 @@ function RowActions({
                         { name: "title", label: "Title", type: "text" },
                         { name: "country", label: "Country", type: "text" },
                         { name: "age", label: "Age", type: "number" },
+                        { name: "status", label: "Status", type: "select", options: ["ACTIVE", "INACTIVE"] },
                     ]}
                     apiEndpoint={`http://localhost:3024/user/${selectedUser.id}`}
                     method="PATCH"
